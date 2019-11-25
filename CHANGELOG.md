@@ -6,6 +6,6 @@ init package
 
 update email
 
-## 0.0.3
+## 0.1.0
 
-update github remote
+fixed unused code
