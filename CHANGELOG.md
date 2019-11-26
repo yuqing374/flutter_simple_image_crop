@@ -9,3 +9,7 @@ update email
 ## 0.1.0
 
 fixed unused code
+
+## 0.1.1
+
+update README
