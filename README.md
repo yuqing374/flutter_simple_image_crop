@@ -16,7 +16,7 @@ Add `simple_image_crop` [![simple_image_crop](https://img.shields.io/pub/v/simpl
 ### Create a widget to load and edit an image:
 
 ```dart
-final imgCropKey = GlobalKey<CropState>();
+final imgCropKey = GlobalKey<ImgCropState>();
 
 Widget _buildCropImage() {
   return Container(
