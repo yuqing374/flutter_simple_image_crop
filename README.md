@@ -35,15 +35,11 @@ Widget _buildCropImage() {
 
 > Select image recommendation `image-picker`, image file may be from the previous page:
 
-    ```
     final Map args = ModalRoute.of(context).settings.arguments
-    ```
 
 > a `async` function get cropped file image:
 
-    ```
     crop.cropCompleted('selected file image', {pictureQuality: 'int of Picture quality'})
-    ```
 
 ```dart
 floatingActionButton: FloatingActionButton(
