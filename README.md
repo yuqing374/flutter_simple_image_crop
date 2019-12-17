@@ -15,6 +15,14 @@ Add `simple_image_crop` [![simple_image_crop](https://img.shields.io/pub/v/simpl
 
 ### Create a widget to load and edit an image:
 
+> image can be of any type:
+
+```dart
+  ImgCrop(...),  //  ImageProvider
+  ImgCrop.file(...) // Image file
+  ImgCrop.asset(...) // Image assets your local
+```
+
 ```dart
 final imgCropKey = GlobalKey<ImgCropState>();
 
@@ -33,13 +41,17 @@ Widget _buildCropImage() {
 
 ### Generate a cropped image:
 
-> Select image recommend `image-picker`, image file may be from the previous page:
-
-    final Map args = ModalRoute.of(context).settings.arguments
-
 > a `async` function get cropped file image:
 
-    final croppedFile = crop.cropCompleted('selected file image', {pictureQuality: 'int of Picture quality'})
+-   [croppedImage] is you cropped image [File]
+-   [pictureQuality] Can control image size and quality
+
+```dart
+  final croppedFile = await crop.cropCompleted(
+    croppedImage,
+    {pictureQuality: 900}
+  )
+```
 
 ```dart
 floatingActionButton: FloatingActionButton(

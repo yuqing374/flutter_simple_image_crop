@@ -13,3 +13,7 @@ fixed unused code
 ## 0.1.1
 
 update README
+
+## 0.1.2
+
+update api findAncestorStateOfType

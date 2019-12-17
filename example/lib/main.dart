@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:simple_image_crop/simple_image_crop.dart';
 
@@ -96,6 +95,11 @@ class _SimpleCropRouteState extends State<SimpleCropRoute> {
   final cropKey = GlobalKey<ImgCropState>();
 
   Future<Null> showImage(BuildContext context, File file) async {
+    new FileImage(file)
+        .resolve(new ImageConfiguration())
+        .addListener(ImageStreamListener((ImageInfo info, bool _) {
+      print('-------------------------------------------$info');
+    }));
     return showDialog<Null>(
         context: context,
         builder: (BuildContext context) {
@@ -142,7 +146,7 @@ class _SimpleCropRouteState extends State<SimpleCropRoute> {
           onPressed: () async {
             final crop = cropKey.currentState;
             final croppedFile =
-                await crop.cropCompleted(args['image'], pictureQuality: 900);
+                await crop.cropCompleted(args['image'], pictureQuality: 600);
             showImage(context, croppedFile);
           },
           tooltip: 'Increment',

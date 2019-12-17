@@ -456,7 +456,7 @@ class _CropPainter extends CustomPainter {
             Radius.circular(boundaries.height / 2)));
     }
     canvas.clipPath(Path.combine(
-        PathOperation.difference, _path1, _path2)); //TODO: 合并路径，选择交叉选区
+        PathOperation.difference, _path1, _path2)); //MARK: 合并路径，选择交叉选区
     canvas.drawRect(Rect.fromLTRB(0.0, 0.0, rect.width, rect.height), paint);
     paint
       ..isAntiAlias = true
