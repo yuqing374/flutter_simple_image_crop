@@ -43,8 +43,8 @@ Widget _buildCropImage() {
 
 > a `async` function get cropped file image:
 
--   [croppedImage] is you cropped image [File]
--   [pictureQuality] Can control image size and quality
+-   `croppedImage` is you cropped image `File`
+-   `pictureQuality` Can control image size and quality
 
 ```dart
   final croppedFile = await crop.cropCompleted(
