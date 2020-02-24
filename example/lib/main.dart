@@ -140,6 +140,7 @@ class _SimpleCropRouteState extends State<SimpleCropRoute> {
             // chipShape: 'rect',
             maximumScale: 3,
             image: FileImage(args['image']),
+            // handleSize: 0.0,
           ),
         ),
         floatingActionButton: FloatingActionButton(
