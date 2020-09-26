@@ -143,28 +143,21 @@ class ImgCropState extends State<ImgCrop> with TickerProviderStateMixin, Drag {
     _activate(1.0);
   }
 
-  Future<File> cropCompleted(File file,
-      {int preferredWidth = 100, int preferredHeight = 100}) async {
-    final options = await ImageCrop.getImageOptions(file: file);
-    debugPrint(
-        'image width: ${options.width}, height: ${options.height}  $scale');
-    print(
-        '--------------------------------------${file.lengthSync().toString()}');
+  Future<File> cropCompleted(File file, {int preferredSize}) async {
+    // final options = await ImageCrop.getImageOptions(file: file);
+    // debugPrint(
+    //     'image width: ${options.width}, height: ${options.height}  $scale');
+
     final sampleFile = await ImageCrop.sampleImage(
       file: file,
-      preferredWidth: (preferredWidth / _scale).round(),
-      preferredHeight: (preferredHeight / _scale).round(),
+      preferredSize: (preferredSize / scale).round(),
     );
 
     final croppedFile = await ImageCrop.cropImage(
       file: sampleFile,
       area: area,
     );
-    final croppedOptions = await ImageCrop.getImageOptions(file: croppedFile);
-    debugPrint(
-        'croppedOptions image width: ${croppedOptions.width}, croppedOptions height: ${croppedOptions.height}');
-    print(
-        '--------------------------------------croppedOptions ${croppedFile.lengthSync().toString()}');
+
     return croppedFile;
   }
 

@@ -147,8 +147,8 @@ class _SimpleCropRouteState extends State<SimpleCropRoute> {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             final crop = cropKey.currentState;
-            final croppedFile = await crop.cropCompleted(args['image'],
-                preferredWidth: 2000, preferredHeight: 400);
+            final croppedFile =
+                await crop.cropCompleted(args['image'], preferredSize: 1000);
             showImage(context, croppedFile);
           },
           tooltip: 'Increment',
