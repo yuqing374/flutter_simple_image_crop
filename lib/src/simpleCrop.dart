@@ -6,19 +6,29 @@ const _kCropHandleSize = 10.0;
 
 enum _CropAction { none, moving, scaling }
 
+enum ChipShape {
+  /// Crop rectangle
+  rect,
+
+  /// Crop circle
+  circle,
+}
+
 class ImgCrop extends StatefulWidget {
   final ImageProvider image;
   final double maximumScale;
   final ImageErrorListener onImageError;
-  final double chipRadius; // 裁剪半径
-  final String chipShape; // 裁剪区域形状
+  final double chipRadius;
+  final double chipRatio;
+  final ChipShape chipShape;
   const ImgCrop(
       {Key key,
       this.image,
       this.maximumScale: 2.0,
       this.onImageError,
       this.chipRadius = 150,
-      this.chipShape = 'circle'})
+      this.chipRatio = 1.0,
+      this.chipShape = ChipShape.circle})
       : assert(image != null),
         assert(maximumScale != null),
         super(key: key);
@@ -28,8 +38,9 @@ class ImgCrop extends StatefulWidget {
       double scale = 1.0,
       this.maximumScale: 2.0,
       this.onImageError,
+      this.chipRatio = 1.0,
       this.chipRadius = 150,
-      this.chipShape = 'circle'})
+      this.chipShape = ChipShape.circle})
       : image = FileImage(file, scale: scale),
         assert(maximumScale != null),
         super(key: key);
@@ -40,9 +51,10 @@ class ImgCrop extends StatefulWidget {
     AssetBundle bundle,
     String package,
     this.chipRadius = 150,
+    this.chipRatio = 1.0,
     this.maximumScale: 2.0,
     this.onImageError,
-    this.chipShape = 'circle',
+    this.chipShape = ChipShape.circle,
   })  : image = AssetImage(assetName, bundle: bundle, package: package),
         assert(maximumScale != null),
         super(key: key);
@@ -128,19 +140,28 @@ class ImgCropState extends State<ImgCrop> with TickerProviderStateMixin, Drag {
     _activate(1.0);
   }
 
-  Future<File> cropCompleted(File file, {int pictureQuality}) async {
+  Future<File> cropCompleted(File file,
+      {int preferredWidth, int preferredHeight}) async {
     final options = await ImageCrop.getImageOptions(file: file);
-    debugPrint('image width: ${options.width}, height: ${options.height}');
+    debugPrint(
+        'image width: ${options.width}, height: ${options.height}  $scale');
+    print(
+        '--------------------------------------${file.lengthSync().toString()}');
     final sampleFile = await ImageCrop.sampleImage(
       file: file,
-      preferredWidth: (pictureQuality / scale).round(),
-      preferredHeight: (pictureQuality / scale).round(),
+      preferredWidth: (preferredWidth / _scale).round(),
+      preferredHeight: (preferredHeight / _scale).round(),
     );
 
     final croppedFile = await ImageCrop.cropImage(
       file: sampleFile,
       area: area,
     );
+    final croppedOptions = await ImageCrop.getImageOptions(file: croppedFile);
+    debugPrint(
+        'croppedOptions image width: ${croppedOptions.width}, croppedOptions height: ${croppedOptions.height}');
+    print(
+        '--------------------------------------croppedOptions ${croppedFile.lengthSync().toString()}');
     return croppedFile;
   }
 
@@ -216,9 +237,11 @@ class ImgCropState extends State<ImgCrop> with TickerProviderStateMixin, Drag {
     final _areaOffset = (_deviceWidth - (widget.chipRadius * 2));
     final _areaOffsetRadio = _areaOffset / _deviceWidth;
     final width = 1.0 - _areaOffsetRadio;
+    final height = (imageWidth * viewWidth * width) /
+        (imageHeight *
+            viewHeight *
+            (widget.chipShape == ChipShape.rect ? widget.chipRatio : 1.0));
 
-    final height =
-        (imageWidth * viewWidth * width) / (imageHeight * viewHeight * 1.0);
     return Rect.fromLTWH((1.0 - width) / 2, (1.0 - height) / 2, width, height);
   }
 
@@ -365,7 +388,7 @@ class _CropPainter extends CustomPainter {
   final Rect area;
   final double scale;
   final double active;
-  final String chipShape;
+  final ChipShape chipShape;
 
   _CropPainter(
       {this.image,
@@ -444,7 +467,7 @@ class _CropPainter extends CustomPainter {
     final _path1 = Path()
       ..addRect(Rect.fromLTRB(0.0, 0.0, rect.width, rect.height));
     Path _path2;
-    if (chipShape == 'rect') {
+    if (chipShape == ChipShape.rect) {
       _path2 = Path()..addRect(boundaries);
     } else {
       _path2 = Path()
@@ -463,7 +486,7 @@ class _CropPainter extends CustomPainter {
       ..color = Colors.white
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
-    if (chipShape == 'rect') {
+    if (chipShape == ChipShape.rect) {
       canvas.drawRect(
           Rect.fromLTRB(boundaries.left - 1, boundaries.top - 1,
               boundaries.right + 1, boundaries.bottom + 1),

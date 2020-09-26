@@ -17,3 +17,11 @@ update README
 ## 0.1.2
 
 update api findAncestorStateOfType
+
+## 0.1.3
+
+update README
+
+## 1.0.0
+
+Add API `chipRatio` to control the rectangle aspect ratio
