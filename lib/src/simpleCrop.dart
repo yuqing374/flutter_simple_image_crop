@@ -2,7 +2,6 @@ part of image_crop;
 
 const _kCropOverlayActiveOpacity = 0.3;
 const _kCropOverlayInactiveOpacity = 0.7;
-const _kCropHandleSize = 10.0;
 
 enum _CropAction { none, moving, scaling }
 
@@ -21,6 +20,7 @@ class ImgCrop extends StatefulWidget {
   final double chipRadius;
   final double chipRatio;
   final ChipShape chipShape;
+  final double handleSize;
   const ImgCrop(
       {Key key,
       this.image,
@@ -28,9 +28,11 @@ class ImgCrop extends StatefulWidget {
       this.onImageError,
       this.chipRadius = 150,
       this.chipRatio = 1.0,
-      this.chipShape = ChipShape.circle})
+      this.chipShape = ChipShape.circle,
+      this.handleSize = 10.0})
       : assert(image != null),
         assert(maximumScale != null),
+        assert(handleSize != null && handleSize >= 0.0),
         super(key: key);
 
   ImgCrop.file(File file,
@@ -38,24 +40,25 @@ class ImgCrop extends StatefulWidget {
       double scale = 1.0,
       this.maximumScale: 2.0,
       this.onImageError,
-      this.chipRatio = 1.0,
       this.chipRadius = 150,
-      this.chipShape = ChipShape.circle})
+      this.chipRatio = 1.0,
+      this.chipShape = ChipShape.circle,
+      this.handleSize = 10.0})
       : image = FileImage(file, scale: scale),
         assert(maximumScale != null),
         super(key: key);
 
-  ImgCrop.asset(
-    String assetName, {
-    Key key,
-    AssetBundle bundle,
-    String package,
-    this.chipRadius = 150,
-    this.chipRatio = 1.0,
-    this.maximumScale: 2.0,
-    this.onImageError,
-    this.chipShape = ChipShape.circle,
-  })  : image = AssetImage(assetName, bundle: bundle, package: package),
+  ImgCrop.asset(String assetName,
+      {Key key,
+      AssetBundle bundle,
+      String package,
+      this.chipRadius = 150,
+      this.maximumScale: 2.0,
+      this.onImageError,
+      this.chipRatio = 1.0,
+      this.chipShape = ChipShape.circle,
+      this.handleSize = 10.0})
+      : image = AssetImage(assetName, bundle: bundle, package: package),
         assert(maximumScale != null),
         super(key: key);
 
@@ -141,7 +144,7 @@ class ImgCropState extends State<ImgCrop> with TickerProviderStateMixin, Drag {
   }
 
   Future<File> cropCompleted(File file,
-      {int preferredWidth, int preferredHeight}) async {
+      {int preferredWidth = 100, int preferredHeight = 100}) async {
     final options = await ImageCrop.getImageOptions(file: file);
     debugPrint(
         'image width: ${options.width}, height: ${options.height}  $scale');
@@ -188,13 +191,15 @@ class ImgCropState extends State<ImgCrop> with TickerProviderStateMixin, Drag {
         onScaleEnd: _isEnabled ? _handleScaleEnd : null,
         child: CustomPaint(
           painter: _CropPainter(
-              image: _image,
-              ratio: _ratio,
-              view: _view,
-              area: _area,
-              scale: _scale,
-              active: _activeController.value,
-              chipShape: widget.chipShape),
+            image: _image,
+            ratio: _ratio,
+            view: _view,
+            area: _area,
+            scale: _scale,
+            active: _activeController.value,
+            chipShape: widget.chipShape,
+            handleSize: widget.handleSize,
+          ),
         ),
       ),
     );
@@ -211,7 +216,7 @@ class ImgCropState extends State<ImgCrop> with TickerProviderStateMixin, Drag {
   // NOTE: 区域性缩小 总区域 - 10 * 10 区域
   Size get _boundaries {
     return _surfaceKey.currentContext.size -
-        Offset(_kCropHandleSize, _kCropHandleSize);
+        Offset(widget.handleSize, widget.handleSize);
   }
 
   void _settleAnimationChanged() {
@@ -233,7 +238,7 @@ class ImgCropState extends State<ImgCrop> with TickerProviderStateMixin, Drag {
     }
 
     final _deviceWidth =
-        MediaQuery.of(context).size.width - (2 * _kCropHandleSize);
+        MediaQuery.of(context).size.width - (2 * widget.handleSize);
     final _areaOffset = (_deviceWidth - (widget.chipRadius * 2));
     final _areaOffsetRadio = _areaOffset / _deviceWidth;
     final width = 1.0 - _areaOffsetRadio;
@@ -389,6 +394,7 @@ class _CropPainter extends CustomPainter {
   final double scale;
   final double active;
   final ChipShape chipShape;
+  final double handleSize;
 
   _CropPainter(
       {this.image,
@@ -397,7 +403,8 @@ class _CropPainter extends CustomPainter {
       this.area,
       this.scale,
       this.active,
-      this.chipShape});
+      this.chipShape,
+      this.handleSize});
 
   @override
   bool shouldRepaint(_CropPainter oldDelegate) {
@@ -411,10 +418,10 @@ class _CropPainter extends CustomPainter {
 
   currentRact(size) {
     return Rect.fromLTWH(
-      _kCropHandleSize / 2,
-      _kCropHandleSize / 2,
-      size.width - _kCropHandleSize,
-      size.height - _kCropHandleSize,
+      handleSize / 2,
+      handleSize / 2,
+      size.width - handleSize,
+      size.height - handleSize,
     );
   }
 

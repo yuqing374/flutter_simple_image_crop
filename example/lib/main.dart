@@ -138,9 +138,10 @@ class _SimpleCropRouteState extends State<SimpleCropRoute> {
             key: cropKey,
             chipRadius: 100,
             chipShape: ChipShape.rect,
-            // chipRatio: 2 / 1,
+            chipRatio: 2 / 1,
             maximumScale: 3,
             image: FileImage(args['image']),
+            // handleSize: 0.0,
           ),
         ),
         floatingActionButton: FloatingActionButton(
