@@ -33,7 +33,7 @@ Widget _buildCropImage() {
         key: cropKey,
         chipRadius: 150,  // crop area radius
         chipShape: 'circle', // crop type "circle" or "rect"
-        image: Image.file(imageFile), // you selected image file
+        image: FileImage(imageFile), // you selected image file
       ),
   );
 }
